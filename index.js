@@ -28,7 +28,7 @@ const repoUrl = 'https://github.com/litpack/create';
   try {
     await fs.mkdir(targetDir, { recursive: true });
     await cloneRepo(repoUrl, targetDir);
-    await updatePackageJson(targetDir, projectName); // Update package.json
+    await updatePackageJson(targetDir, projectName);
     projectCreated(packageManager);
   } catch (err) {
     console.error(`Error creating project directory: ${err}`);
