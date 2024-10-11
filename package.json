@@ -1,10 +1,11 @@
 {
   "name": "create-litpack",
-  "version": "1.0.19",
+  "version": "1.0.28",
   "bin": {
     "create-litpack": "./index.js",
     "init-litpack": "./index.js"
   },
+  "type": "module",
   "dependencies": {
     "inquirer": "^11.1.0",
     "chalk":"5.3.0",
