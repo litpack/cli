@@ -43,10 +43,20 @@ async function promptForProjectName() {
       output: process.stdout,
     });
 
-    rl.question('Please provide a project name: ', (name) => {
-      rl.close();
-      resolve(name.trim());
-    });
+    const askForName = () => {
+      rl.question('Please provide a project name: ', (name) => {
+        name = name.trim();
+        if (name) {
+          rl.close();
+          resolve(name);
+        } else {
+          console.log('Project name cannot be empty. Please try again.');
+          askForName();
+        }
+      });
+    };
+
+    askForName();
   });
 }
 
@@ -127,7 +137,7 @@ async function cloneRepo(repoUrl, targetDir) {
 
 async function updatePackageJson(targetDir, projectName) {
   const packageJsonPath = path.join(targetDir, 'package.json');
-  
+
   try {
     const packageJson = await fs.readFile(packageJsonPath, 'utf-8');
     const updatedPackageJson = packageJson.replace(/"name":\s*"(.*?)"/, `"name": "${projectName}"`);
