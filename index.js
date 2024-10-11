@@ -1,12 +1,15 @@
 #!/usr/bin/env node
 
 import { promises as fs } from "fs";
+import { mkdtemp } from 'fs/promises';
 import path from "path";
 import { execSync, exec } from "child_process";
 import readline from "readline";
 import chalk from "chalk";
 import ora from "ora";
 import ProgressBar from "progress";
+import { tmpdir } from 'os';
+import { join } from 'path';
 
 let projectName = process.argv[2];
 const repoUrl = "https://github.com/litpack/create";
@@ -167,8 +170,9 @@ async function checkInquirerInstalled() {
 }
 
 async function installInquirer(packageManager, spinner, targetDir) {
-  return new Promise((resolve, reject) => {
+  return new Promise(async (resolve, reject) => {
     let command;
+    const tempDir = await mkdtemp(join(tmpdir(), 'litpack-'));
     switch (packageManager) {
       case "npm":
         command = "npm install inquirer --no-package-lock --no-save";
@@ -184,12 +188,10 @@ async function installInquirer(packageManager, spinner, targetDir) {
         break;
       default:
         console.error(`Unsupported package manager: ${packageManager}`);
-        return reject(
-          new Error(`Unsupported package manager: ${packageManager}`)
-        );
+        return reject(new Error(`Unsupported package manager: ${packageManager}`));
     }
 
-    exec(command, { cwd: targetDir }, (error, stdout, stderr) => {
+    exec(command, { cwd: tempDir }, (error, stdout, stderr) => {
       if (error) {
         spinner.fail(`Failed to install inquirer: ${stderr}`);
         return reject(error);
