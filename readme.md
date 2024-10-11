@@ -1,92 +1,65 @@
-# Frontend Boilerplate with Rspack, Lit.js, Babel, TypeScript, and TailwindCSS
+# Litpack Project Generator
 
-This is a frontend boilerplate project set up using Rspack, Lit.js, TypeScript, TailwindCSS, Preact Signals, and Babel, designed to help you quickly start your development process while maintaining modern build optimizations.
+Welcome to the **Litpack Project Generator**! This CLI tool allows you to quickly scaffold new Lit.js projects using your preferred package manager.
 
-## Table of Contents
+## Installation
 
-- [Features](#features)
-- [Getting Started](#getting-started)
-  - [Prerequisites](#prerequisites)
-- [Scripts](#scripts)
-- [Project Structure](#project-structure)
-- [Development](#development)
-- [Production Build](#production-build)
-- [License](#license)
+You can easily create a new Litpack project using either of the following commands:
 
-## Features
-
-- **Modern JavaScript and TypeScript support** with Babel
-- **Reactive state management** using Preact Signals
-- **Hot Module Replacement (HMR)** for efficient development
-- **CSS processing** with TailwindCSS and PostCSS
-- **Optimized asset handling** using Rspack
-- **Compression of assets** for production
-- **Source maps** for easier debugging in development
-
-## Getting Started
-
-To get started with this boilerplate, clone the repository and install the dependencies:
+### Using npm
 
 ```bash
-git clone <repository-url>
-cd <repository-name>
-npm install
+npm create litpack@latest <project-name>
 ```
 
-### Prerequisites
-
-Make sure you have [Node.js](https://nodejs.org/) installed on your machine.
-
-## Scripts
-
-This project comes with several scripts to help you with your development and build processes:
-
-- **Clean the build directory:**
-  ```bash
-  npm run clean
-  ```
-
-- **Build for production:**
-  ```bash
-  npm run build
-  ```
-
-- **Start the development server:**
-  ```bash
-  npm run start
-  ```
-
-## Project Structure
-
-```
-<repository-name>
-├── dist/                   # Compiled and built files
-├── src/                    # Source files
-│   ├── app.ts              # Main entry point
-│   └── index.html          # HTML template
-├── package.json            # Project configuration
-└── rspack.config.js        # Rspack configuration
-```
-
-## Development
-
-To start a development server with Hot Module Replacement, run:
+### Using npx
 
 ```bash
-npm run start
+npx create-litpack@latest <project-name>
 ```
 
-The development server will be available at `http://localhost:9000`, and changes to your files will automatically reflect in the browser.
+Replace `<project-name>` with the desired name for your project.
 
-## Production Build
+## Usage
 
-To create a production build with optimizations, run:
+1. **Run the Command**:
 
-```bash
-npm run build
-```
+   To create a new project, simply execute the command with your project name. If you don't specify a project name, you'll be prompted to enter one.
 
-This will generate optimized files in the `dist` directory, ready for deployment.
+2. **Select a Package Manager**:
+
+   During the setup process, you will be prompted to choose your preferred package manager from the following options:
+
+   - npm
+   - yarn
+   - pnpm
+   - bun
+
+3. **Project Initialization**:
+
+   The tool will create a new directory for your project, clone the necessary repository, and update the `package.json` file with your project name.
+
+## Commands
+
+Once your project is created, you can navigate into your project folder and run:
+
+- **Clean the build directory**:
+
+  ```bash
+  <package-manager> run clean
+  ```
+
+- **Build the project**:
+
+  ```bash
+  <package-manager> run build
+  ```
+
+- **Start the development server**:
+
+  ```bash
+  <package-manager> start
+  ```
 
 ## License
 
