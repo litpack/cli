@@ -3,7 +3,7 @@
 import { promises as fs } from "fs";
 import { mkdtemp } from 'fs/promises';
 import path from "path";
-import { execSync, exec } from "child_process";
+import { execSync } from "child_process";
 import readline from "readline";
 import chalk from "chalk";
 import ora from "ora";
@@ -27,27 +27,6 @@ const repoUrl = "https://github.com/litpack/create";
 
   const packageManager = await promptPackageManager();
 
-  const isInquirerInstalled = await checkInquirerInstalled();
-  if (!isInquirerInstalled) {
-    const spinner = ora("Preparing...").start();
-    const bar = new ProgressBar("⏳ Almost there... [:bar] :percent", {
-      total: 100,
-      width: 30,
-      complete: "=",
-      incomplete: " ",
-    });
-
-    // Update the progress bar while installing
-    const interval = setInterval(() => {
-      bar.tick(10);
-      if (bar.complete) {
-        clearInterval(interval);
-      }
-    }, 500);
-
-    await installInquirer(packageManager, spinner);
-  }
-
   const targetDir = path.join(process.cwd(), projectName);
 
   try {
@@ -69,9 +48,11 @@ const repoUrl = "https://github.com/litpack/create";
     }, 500);
 
     await cloneRepo(repoUrl, targetDir, bar);
+    spinner.succeed("Repository cloned successfully! 🎉");
 
     const updateSpinner = ora("Updating project files...").start();
     await updatePackageJson(targetDir, projectName);
+    updateSpinner.succeed("Project files updated successfully!");
 
     projectCreated(packageManager);
   } catch (err) {
@@ -143,59 +124,38 @@ function promptForNewProjectName() {
 }
 
 async function promptPackageManager() {
-  const inquirer = (await import("inquirer")).default;
   console.log(chalk.magenta("💡 Choosing a package manager..."));
-  const answers = await inquirer.prompt([
-    {
-      type: "list",
-      name: "packageManager",
-      message: "Please choose a package manager:",
-      choices: ["npm", "yarn", "pnpm", "bun"],
-      default: "npm",
-    },
-  ]);
-  console.log(chalk.cyan(`🚀 You selected: ${answers.packageManager}`));
-  return answers.packageManager;
+  const packageManagers = ["npm", "yarn", "pnpm", "bun"];
+  const choice = await promptForChoice(packageManagers);
+  console.log(chalk.cyan(`🚀 You selected: ${choice}`));
+  return choice;
 }
 
-async function checkInquirerInstalled() {
-  try {
-    require.resolve("inquirer");
-    return true;
-  } catch {
-    return false;
-  }
-}
-
-async function installInquirer(packageManager, spinner, targetDir) {
-  return new Promise(async (resolve, reject) => {
-    let command;
-    const tempDir = await mkdtemp(join(tmpdir(), 'litpack-'));
-    switch (packageManager) {
-      case "npm":
-        command = "npm install inquirer --no-package-lock --no-save";
-        break;
-      case "yarn":
-        command = "yarn add inquirer --ignore-engines";
-        break;
-      case "pnpm":
-        command = "pnpm add inquirer --no-save";
-        break;
-      case "bun":
-        command = "bun add inquirer --no-save";
-        break;
-      default:
-        console.error(`Unsupported package manager: ${packageManager}`);
-        return reject(new Error(`Unsupported package manager: ${packageManager}`));
-    }
-
-    exec(command, { cwd: tempDir }, (error, stdout, stderr) => {
-      if (error) {
-        spinner.fail(`Failed to create project: ${stderr}`);
-        return reject(error);
-      }
-      resolve(stdout);
+async function promptForChoice(choices) {
+  return new Promise((resolve) => {
+    const rl = readline.createInterface({
+      input: process.stdin,
+      output: process.stdout,
     });
+
+    const displayChoices = () => {
+      console.log(chalk.green("Please choose a package manager:"));
+      choices.forEach((choice, index) => {
+        console.log(chalk.blue(`${index + 1}. ${choice}`));
+      });
+      rl.question(chalk.green("Select a number: "), (answer) => {
+        const index = parseInt(answer) - 1;
+        if (index >= 0 && index < choices.length) {
+          rl.close();
+          resolve(choices[index]);
+        } else {
+          console.log(chalk.red("⚠️ Invalid choice. Try again."));
+          displayChoices();
+        }
+      });
+    };
+
+    displayChoices();
   });
 }
 
@@ -211,16 +171,13 @@ async function cloneRepo(repoUrl, targetDir, bar) {
 
     try {
       execSync(`git clone ${repoUrl} ${targetDir}`, { stdio: "inherit" });
-      
       execSync(`git -C ${targetDir} checkout stable`, { stdio: "inherit" });
-      
     } catch (err) {
       clearInterval(interval);
       reject(err);
     }
   });
 }
-
 
 async function updatePackageJson(targetDir, projectName) {
   const packageJsonPath = path.join(targetDir, "package.json");
