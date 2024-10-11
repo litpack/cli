@@ -69,11 +69,9 @@ const repoUrl = "https://github.com/litpack/create";
     }, 500);
 
     await cloneRepo(repoUrl, targetDir, bar);
-    spinner.succeed("Repository cloned successfully! 🎉");
 
     const updateSpinner = ora("Updating project files...").start();
     await updatePackageJson(targetDir, projectName);
-    updateSpinner.succeed("Project files updated successfully!");
 
     projectCreated(packageManager);
   } catch (err) {
@@ -193,10 +191,9 @@ async function installInquirer(packageManager, spinner, targetDir) {
 
     exec(command, { cwd: tempDir }, (error, stdout, stderr) => {
       if (error) {
-        spinner.fail(`Failed to install inquirer: ${stderr}`);
+        spinner.fail(`Failed to create project: ${stderr}`);
         return reject(error);
       }
-      spinner.succeed("Inquirer installed successfully!");
       resolve(stdout);
     });
   });
