@@ -1,9 +1,9 @@
 {
   "name": "create-litpack",
-  "version": "1.0.41",
+  "version": "1.0.45",
   "bin": {
-    "create-litpack": "./index.js",
-    "init-litpack": "./index.js"
+    "create-litpack": "./create.js",
+    "init-litpack": "./create.js"
   },
   "type": "module"
 }

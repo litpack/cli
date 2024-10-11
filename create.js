@@ -105,7 +105,6 @@ function promptForNewProjectName() {
 }
 
 async function promptPackageManager() {
-  console.log("\x1b[35m💡 Choosing a package manager...\x1b[0m");
   const packageManagers = ["npm", "yarn", "pnpm", "bun"];
   const choice = await promptForChoice(packageManagers);
   console.log(`\x1b[36m🚀 You selected: ${choice}\x1b[0m`);
@@ -119,24 +118,40 @@ async function promptForChoice(choices) {
       output: process.stdout,
     });
 
+    let currentIndex = 0;
+
     const displayChoices = () => {
+      console.clear();
       console.log("\x1b[32mPlease choose a package manager:\x1b[0m");
       choices.forEach((choice, index) => {
-        console.log(`\x1b[34m${index + 1}. ${choice}\x1b[0m`);
-      });
-      rl.question("\x1b[32mSelect a number: \x1b[0m", (answer) => {
-        const index = parseInt(answer) - 1;
-        if (index >= 0 && index < choices.length) {
-          rl.close();
-          resolve(choices[index]);
-        } else {
-          console.log("\x1b[31m⚠️ Invalid choice. Try again.\x1b[0m");
-          displayChoices();
-        }
+        const isSelected = index === currentIndex ? "👉" : "   ";
+        console.log(`${isSelected} ${choice}`);
       });
     };
 
+    const handleInput = (key) => {
+      if (key === '\u001B[B') {
+        currentIndex = (currentIndex + 1) % choices.length;
+      } else if (key === '\u001B[A') {
+        currentIndex = (currentIndex - 1 + choices.length) % choices.length;
+      } else if (key === ' ' || key === '\u000D') {
+        rl.close();
+        resolve(choices[currentIndex]);
+      }
+      displayChoices();
+    };
+
+    readline.emitKeypressEvents(process.stdin);
+    process.stdin.setRawMode(true);
     displayChoices();
+
+    process.stdin.on('keypress', (str, key) => {
+      if (key.name === 'escape') {
+        rl.close();
+        process.exit(0);
+      }
+      handleInput(key.sequence);
+    });
   });
 }
 
@@ -151,7 +166,6 @@ async function cloneRepo(repoUrl, targetDir) {
     throw new Error("Failed to clone repository: " + err.message);
   }
 }
-
 
 async function updatePackageJson(targetDir, projectName) {
   const packageJsonPath = path.join(targetDir, "package.json");
