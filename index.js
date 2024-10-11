@@ -144,10 +144,14 @@ async function cloneRepo(repoUrl, targetDir) {
   try {
     execSync(`git clone ${repoUrl} ${targetDir}`, { stdio: "inherit" });
     execSync(`git -C ${targetDir} checkout stable`, { stdio: "inherit" });
+    
+    await fs.rm(path.join(targetDir, '.git'), { recursive: true, force: true });
+    
   } catch (err) {
     throw new Error("Failed to clone repository: " + err.message);
   }
 }
+
 
 async function updatePackageJson(targetDir, projectName) {
   const packageJsonPath = path.join(targetDir, "package.json");
