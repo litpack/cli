@@ -16,7 +16,7 @@ const repoUrl = "https://github.com/litpack/create";
 
 (async () => {
   console.log(
-    chalk.blue("🌟 Welcome to the project generator! Let’s get started...")
+    chalk.blue("🌟 Welcome to the Litpack Project Generator! Let's get started...")
   );
 
   if (!projectName) {
